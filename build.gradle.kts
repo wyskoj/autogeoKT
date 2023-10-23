@@ -10,6 +10,10 @@ repositories {
 }
 
 dependencies {
+    // Multik
+    implementation("org.jetbrains.kotlinx:multik-core:0.2.2")
+    implementation("org.jetbrains.kotlinx:multik-default:0.2.2")
+
     testImplementation(kotlin("test"))
 }
 
