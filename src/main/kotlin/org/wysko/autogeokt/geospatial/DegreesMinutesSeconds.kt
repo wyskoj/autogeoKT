@@ -1,5 +1,8 @@
 package org.wysko.autogeokt.geospatial
 
+/**
+ * An angle represented in degrees, minutes, and seconds format.
+ */
 data class DegreesMinutesSeconds(
     val degrees: Int,
     val minutes: Int,
@@ -11,6 +14,10 @@ data class DegreesMinutesSeconds(
      * @return The angle in radians.
      */
     fun toRadians(): Double = toRadians(degrees, minutes, seconds)
+
+    override fun toString(): String {
+        return "$degrees° $minutes' $seconds\""
+    }
 
     companion object {
         /**

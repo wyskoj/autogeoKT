@@ -2,7 +2,9 @@ package org.wysko.autogeokt.operation.leastsquares
 
 import org.jetbrains.kotlinx.multik.api.mk
 import org.jetbrains.kotlinx.multik.api.ndarray
+import org.jetbrains.kotlinx.multik.ndarray.data.get
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class TestGeneralLeastSquares {
     @Test
@@ -16,7 +18,16 @@ class TestGeneralLeastSquares {
 
         val w = mk.ndarray(mk[1.0, 1.0, 1.0])
 
-        val data = GeneralLeastSquaresData(a, l, w)
-        GeneralLeastSquares(data).result
+        val data = GeneralLeastSquaresData(2, 3, a, l, w)
+        val result = GeneralLeastSquares(data).result
+
+        assertEquals(1.514_285, result.x[0], 0.000_001)
+        assertEquals(1.442_857, result.x[1], 0.000_001)
+
+        assertEquals(-0.042857, result.v[0], 0.000_001)
+        assertEquals(0.085714, result.v[1], 0.000_001)
+        assertEquals(-0.128571, result.v[2], 0.000_001)
+
+        assertEquals(0.160_356, result.so, 0.000_001)
     }
 }

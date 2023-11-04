@@ -57,4 +57,6 @@ data class Ellipsoid(
          */
         val CLARKE_1866 = Ellipsoid(6378206.4, 6356583.8, "Clarke 1866")
     }
+
+    override fun toString(): String = name
 }
