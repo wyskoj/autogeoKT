@@ -1,5 +1,6 @@
 package org.wysko.autogeokt.gui.form.components
 
+import org.wysko.autogeokt.geospatial.Circle
 import org.wysko.autogeokt.geospatial.DegreesMinutesSeconds
 import org.wysko.autogeokt.geospatial.Ellipsoid
 import org.wysko.autogeokt.geospatial.Ray
@@ -15,7 +16,7 @@ data class InputData(
     val name: String,
     val title: String,
     val description: String,
-    val isOptional: Boolean = false
+    val isOptional: Boolean = false,
 )
 
 /**
@@ -27,21 +28,25 @@ sealed class FormField<D> {
 
     /** Input for selecting an [Ellipsoid]. */
     data class EllipsoidInput(
-        override val data: InputData
+        override val data: InputData,
     ) : FormField<Ellipsoid>()
 
     /** Input for entering a [DegreesMinutesSeconds]. */
     data class DegreesMinutesSecondsInput(
-        override val data: InputData
+        override val data: InputData,
     ) : FormField<DegreesMinutesSeconds>()
 
     /** Input for entering a [Number]. */
     data class NumberInput(
-        override val data: InputData
+        override val data: InputData,
     ) : FormField<Number>()
 
     /** Input for entering a [Ray], which is just a point and a direction. */
     data class RayInput(
-        override val data: InputData
+        override val data: InputData,
     ) : FormField<Ray>()
+
+    data class CircleInput(
+        override val data: InputData,
+    ) : FormField<Circle>()
 }

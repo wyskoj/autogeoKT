@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.9.0"
+    kotlin("plugin.serialization") version "1.9.0"
     id("org.jetbrains.compose") version "1.5.3"
 }
 
@@ -13,8 +14,6 @@ repositories {
 }
 
 dependencies {
-    val voyagerVersion = "1.0.0-rc08"
-
     // Multik
     implementation("org.jetbrains.kotlinx:multik-core:0.2.2")
     implementation("org.jetbrains.kotlinx:multik-default:0.2.2")
@@ -24,12 +23,16 @@ dependencies {
     implementation(compose.material3)
 
     // Compose Voyager
+    val voyagerVersion = "1.0.0-rc08"
     implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
     implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
 
     // Kotlin
     implementation(kotlin("reflect"))
     testImplementation(kotlin("test"))
+
+    // KotlinX Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.0")
 }
 
 tasks.test {

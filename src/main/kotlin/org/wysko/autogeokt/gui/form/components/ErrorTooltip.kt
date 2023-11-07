@@ -17,6 +17,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import org.wysko.autogeokt.gui.form.InputError
 
+/**
+ * Displays an error tooltip based on a set of input errors.
+ *
+ * @param errors The set of input errors to display.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ErrorTooltip(errors: Set<InputError>) {
@@ -26,20 +31,20 @@ fun ErrorTooltip(errors: Set<InputError>) {
                 Surface(
                     modifier = Modifier.shadow(4.dp),
                     color = MaterialTheme.colorScheme.errorContainer,
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(4.dp),
                 ) {
                     Text(
                         text = "This field has errors:\n${errors.joinToString("\n") { "• ${it.message}" }}",
-                        modifier = Modifier.padding(10.dp)
+                        modifier = Modifier.padding(10.dp),
                     )
                 }
-            }
+            },
         ) {
             Icon(
                 painterResource("/icons/error.svg"),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                tint = if (errors.any()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                tint = if (errors.any()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             )
         }
     }

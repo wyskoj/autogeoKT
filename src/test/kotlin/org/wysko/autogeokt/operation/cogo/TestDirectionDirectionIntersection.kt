@@ -5,6 +5,8 @@ import org.junit.jupiter.api.assertThrows
 import org.wysko.autogeokt.geospatial.Cartesian2D
 import org.wysko.autogeokt.geospatial.DegreesMinutesSeconds
 import org.wysko.autogeokt.geospatial.Ray
+import org.wysko.autogeokt.operation.DirectionDirectionIntersection
+import org.wysko.autogeokt.operation.DirectionDirectionIntersectionData
 import java.lang.IllegalArgumentException
 import kotlin.test.assertEquals
 
@@ -21,11 +23,10 @@ class TestDirectionDirectionIntersection {
             Cartesian2D(7484.8, 5209.64),
             DegreesMinutesSeconds(141, 30, 16.0)
         )
+        val intersection = DirectionDirectionIntersection(DirectionDirectionIntersectionData(ray1, ray2))
 
-        val intersection = DirectionDirectionIntersection(Pair(ray1, ray2))
-
-        assertEquals(8637.85, intersection.result.x, 0.01)
-        assertEquals(3759.83, intersection.result.y, 0.01)
+        assertEquals(8637.85, intersection.result.intersectionPoint.x, 0.01)
+        assertEquals(3759.83, intersection.result.intersectionPoint.y, 0.01)
     }
 
     @Test
@@ -40,10 +41,10 @@ class TestDirectionDirectionIntersection {
             DegreesMinutesSeconds(155,42,36.0),
         )
 
-        val intersection = DirectionDirectionIntersection(Pair(ray1, ray2))
+        val intersection = DirectionDirectionIntersection(DirectionDirectionIntersectionData(ray1, ray2))
 
-        assertEquals(1629.330, intersection.result.x, 0.001)
-        assertEquals(1907.448, intersection.result.y, 0.001)
+        assertEquals(1629.330, intersection.result.intersectionPoint.x, 0.001)
+        assertEquals(1907.448, intersection.result.intersectionPoint.y, 0.001)
     }
 
     @Test
@@ -58,10 +59,10 @@ class TestDirectionDirectionIntersection {
             DegreesMinutesSeconds(90, 0, 0.0)
         )
 
-        val intersection = DirectionDirectionIntersection(Pair(ray1, ray2))
+        val intersection = DirectionDirectionIntersection(DirectionDirectionIntersectionData(ray1, ray2))
 
-        assertEquals(1000.0, intersection.result.x, 0.01)
-        assertEquals(3000.0, intersection.result.y, 0.01)
+        assertEquals(1000.0, intersection.result.intersectionPoint.x, 0.01)
+        assertEquals(3000.0, intersection.result.intersectionPoint.y, 0.01)
     }
 
     @Test
@@ -76,7 +77,7 @@ class TestDirectionDirectionIntersection {
             DegreesMinutesSeconds(23,10,45.0),
         )
 
-        val intersection = DirectionDirectionIntersection(Pair(ray1, ray2))
+        val intersection = DirectionDirectionIntersection(DirectionDirectionIntersectionData(ray1, ray2))
 
         val exception = assertThrows<IllegalArgumentException> { intersection.result }
         assertEquals("The directions must not be parallel.", exception.message)
@@ -94,7 +95,7 @@ class TestDirectionDirectionIntersection {
             DegreesMinutesSeconds(203,10,45.0),
         )
 
-        val intersection = DirectionDirectionIntersection(Pair(ray1, ray2))
+        val intersection = DirectionDirectionIntersection(DirectionDirectionIntersectionData(ray1, ray2))
 
         val exception = assertThrows<IllegalArgumentException> { intersection.result }
         assertEquals("The directions must not be parallel.", exception.message)
@@ -112,7 +113,7 @@ class TestDirectionDirectionIntersection {
             DegreesMinutesSeconds(135, 0, 0.0)
         )
 
-        val intersection = DirectionDirectionIntersection(Pair(ray1, ray2))
+        val intersection = DirectionDirectionIntersection(DirectionDirectionIntersectionData(ray1, ray2))
 
         val exception = assertThrows<IllegalArgumentException> { intersection.result }
         assertEquals("Points must not be coincident.", exception.message)
@@ -130,7 +131,7 @@ class TestDirectionDirectionIntersection {
             DegreesMinutesSeconds(45, 0, 0.0)
         )
 
-        val intersection = DirectionDirectionIntersection(Pair(ray1, ray2))
+        val intersection = DirectionDirectionIntersection(DirectionDirectionIntersectionData(ray1, ray2))
 
         assertThrows<IllegalArgumentException> { intersection.result }
     }

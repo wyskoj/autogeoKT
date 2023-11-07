@@ -1,21 +1,6 @@
-package org.wysko.autogeokt.gui.material
+@file:Suppress("All")
 
-/*
- * Copyright (C) 2023 Jacob Wysko
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see https://www.gnu.org/licenses/.
- */
+package org.wysko.autogeokt.gui.material
 
 import androidx.compose.ui.graphics.Color
 
@@ -45,7 +30,6 @@ val md_theme_light_outline = Color(0xFF72796F)
 val md_theme_light_inverseOnSurface = Color(0xFFF0F1EB)
 val md_theme_light_inverseSurface = Color(0xFF2F312D)
 val md_theme_light_inversePrimary = Color(0xFF5DE065)
-val md_theme_light_shadow = Color(0xFF000000)
 val md_theme_light_surfaceTint = Color(0xFF006E1C)
 val md_theme_light_outlineVariant = Color(0xFFC2C9BD)
 val md_theme_light_scrim = Color(0xFF000000)
@@ -76,10 +60,6 @@ val md_theme_dark_outline = Color(0xFF8C9388)
 val md_theme_dark_inverseOnSurface = Color(0xFF1A1C19)
 val md_theme_dark_inverseSurface = Color(0xFFE2E3DD)
 val md_theme_dark_inversePrimary = Color(0xFF006E1C)
-val md_theme_dark_shadow = Color(0xFF000000)
 val md_theme_dark_surfaceTint = Color(0xFF5DE065)
 val md_theme_dark_outlineVariant = Color(0xFF424940)
 val md_theme_dark_scrim = Color(0xFF000000)
-
-
-val seed = Color(0xFF3BC14A)

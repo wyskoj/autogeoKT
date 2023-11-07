@@ -3,10 +3,12 @@ package org.wysko.autogeokt.operation.leastsquares
 import org.jetbrains.kotlinx.multik.api.mk
 import org.jetbrains.kotlinx.multik.api.ndarray
 import org.jetbrains.kotlinx.multik.ndarray.data.get
+import org.wysko.autogeokt.operation.IndirectObservationLeastSquares
+import org.wysko.autogeokt.operation.IndirectObservationLeastSquaresData
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class TestGeneralLeastSquares {
+class TestIndirectObservationLeastSquares {
     @Test
     fun `Should work with a simple example`() {
         val a = mk.ndarray(mk[
@@ -18,8 +20,8 @@ class TestGeneralLeastSquares {
 
         val w = mk.ndarray(mk[1.0, 1.0, 1.0])
 
-        val data = GeneralLeastSquaresData(2, 3, a, l, w)
-        val result = GeneralLeastSquares(data).result
+        val data = IndirectObservationLeastSquaresData(2, 3, a, l, w)
+        val result = IndirectObservationLeastSquares(data).result
 
         assertEquals(1.514_285, result.x[0], 0.000_001)
         assertEquals(1.442_857, result.x[1], 0.000_001)

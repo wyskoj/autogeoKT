@@ -23,13 +23,13 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.launch
 import org.wysko.autogeokt.gui.Wait
-import org.wysko.autogeokt.gui.form.OperationInputScreen
 import org.wysko.autogeokt.operation.OPERATION_DETAILS
 import org.wysko.autogeokt.operation.Operation
-import org.wysko.autogeokt.operation.OperationCategory
+import org.wysko.autogeokt.operation.details.OperationCategory
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 
@@ -45,8 +45,8 @@ object OperationSelectionScreen : Screen {
         val isLoading = remember { mutableStateOf(false) }
         Box(
             modifier = Modifier.fillMaxSize().pointerHoverIcon(
-                if (isLoading.value) PointerIcon.Wait else PointerIcon.Default
-            )
+                if (isLoading.value) PointerIcon.Wait else PointerIcon.Default,
+            ),
         ) {
             OperationSelectionScreenContent(isLoading.value) {
                 CoroutineScope(Default).launch {
@@ -81,13 +81,13 @@ fun OperationSelectionScreenContent(isLoading: Boolean, onOperationSelect: (KCla
 fun OperationCategoryCard(
     category: OperationCategory,
     isLoading: Boolean,
-    onOperationSelect: (KClass<out Operation<*, *>>) -> Unit
+    onOperationSelect: (KClass<out Operation<*, *>>) -> Unit,
 ) {
     Card(
         modifier = Modifier.width(400.dp).padding(16.dp),
         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        elevation = 1.dp
+        elevation = 1.dp,
     ) {
         Column {
             OperationCategoryHeader(category.title, painterResource(category.icon))
@@ -107,24 +107,24 @@ fun OperationCategoryCard(
 @Composable
 fun OperationCategoryHeader(title: String, icon: Painter) {
     Column(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier.padding(16.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Icon(
                 icon,
                 contentDescription = null,
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(64.dp),
             )
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.End,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 16.dp)
+                modifier = Modifier.padding(start = 16.dp),
             )
         }
     }
@@ -138,21 +138,21 @@ fun OperationSelectionButton(title: String, icon: Painter, isLoading: Boolean, o
     Box(
         modifier = Modifier.clickable(enabled = !isLoading) {
             onClick()
-        }
+        },
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
         ) {
             Icon(
                 icon,
                 contentDescription = null,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
             )
         }
     }

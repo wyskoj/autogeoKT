@@ -1,11 +1,9 @@
 package org.wysko.autogeokt.gui.form.components.input
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import org.wysko.autogeokt.geospatial.Ellipsoid
 import org.wysko.autogeokt.gui.form.InputError
 import org.wysko.autogeokt.gui.form.components.ExposedDropDownMenu
@@ -22,7 +20,7 @@ fun EllipsoidInput(
     errors: Set<InputError>?,
     setErrors: (Set<InputError>) -> Unit,
     isShowError: Boolean = false,
-    setIsMutated: (Boolean) -> Unit
+    setIsMutated: (Boolean) -> Unit,
 ) {
     val ellipsoids = Ellipsoid::class.companionObjectInstance
         ?.let { companionInstance ->
@@ -40,7 +38,11 @@ fun EllipsoidInput(
     }
 
     InputWrapper(
-        isShowError, errors, descriptionText, false, label
+        isShowError,
+        errors,
+        descriptionText,
+        false,
+        label,
     ) {
         ExposedDropDownMenu(
             items = listOf(null, *ellipsoids.toTypedArray()),
@@ -56,11 +58,11 @@ fun EllipsoidInput(
                 } ?: "No ellipsoid selected"
             },
             modifier = Modifier.fillMaxWidth(),
-            isError = errors?.any() == true && isShowError
+            isError = errors?.any() == true && isShowError,
         )
     }
 }
 
 data class NoEllipsoidSelectedError(
-    override val message: String = "No ellipsoid selected"
+    override val message: String = "No ellipsoid selected",
 ) : InputError

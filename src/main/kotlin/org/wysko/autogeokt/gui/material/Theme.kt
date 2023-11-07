@@ -19,10 +19,9 @@ package org.wysko.autogeokt.gui.material
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -56,7 +55,6 @@ private val LightColors = lightColorScheme(
     scrim = md_theme_light_scrim,
 )
 
-
 private val DarkColors = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
@@ -89,10 +87,13 @@ private val DarkColors = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
+/**
+ * A composable that provides [MaterialTheme] to its children.
+ */
 @Composable
 fun AppTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colors = if (!useDarkTheme) {
         LightColors
@@ -102,6 +103,6 @@ fun AppTheme(
 
     MaterialTheme(
         colorScheme = colors,
-        content = content
+        content = content,
     )
 }

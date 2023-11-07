@@ -3,7 +3,9 @@ package org.wysko.autogeokt.operation.geodeticcomputations
 import org.junit.jupiter.api.Test
 import org.wysko.autogeokt.geospatial.DegreesMinutesSeconds
 import org.wysko.autogeokt.geospatial.Ellipsoid
-import java.util.*
+import org.wysko.autogeokt.operation.Radii
+import org.wysko.autogeokt.operation.RadiiData
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

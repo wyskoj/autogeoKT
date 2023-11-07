@@ -35,8 +35,8 @@ fun DegreesMinutesSecondsInput(
                 DegreesMinutesSeconds(
                     d.value.toInt(),
                     m.value.toInt(),
-                    s.value.toDouble()
-                )
+                    s.value.toDouble(),
+                ),
             )
         } else {
             onValueChange(null)
@@ -53,7 +53,7 @@ fun DegreesMinutesSecondsInput(
         errors = errors,
         descriptionText = descriptionText,
         isOptional = isOptional,
-        title = label
+        title = label,
     ) {
         DMSInput(d, m, s, errors, isShowError)
     }
@@ -65,11 +65,11 @@ fun DMSInput(
     m: MutableState<String>,
     s: MutableState<String>,
     errors: Set<InputError>?,
-    isShowError: Boolean
+    isShowError: Boolean,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         TextField(
             d.value,
@@ -77,7 +77,7 @@ fun DMSInput(
             singleLine = true,
             modifier = Modifier.weight(1f),
             suffix = { Text("°") },
-            isError = errors?.any() == true && isShowError
+            isError = errors?.any() == true && isShowError,
         )
         TextField(
             m.value,
@@ -85,7 +85,7 @@ fun DMSInput(
             singleLine = true,
             modifier = Modifier.weight(1f),
             suffix = { Text("'") },
-            isError = errors?.any() == true && isShowError
+            isError = errors?.any() == true && isShowError,
         )
         TextField(
             s.value,
@@ -93,7 +93,7 @@ fun DMSInput(
             singleLine = true,
             modifier = Modifier.weight(1f),
             suffix = { Text("\"") },
-            isError = errors?.any() == true && isShowError
+            isError = errors?.any() == true && isShowError,
         )
     }
 }

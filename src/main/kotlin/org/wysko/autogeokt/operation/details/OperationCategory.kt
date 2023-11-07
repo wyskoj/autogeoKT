@@ -1,4 +1,4 @@
-package org.wysko.autogeokt.operation
+package org.wysko.autogeokt.operation.details
 
 /**
  * Represents the category of an operation.
@@ -8,8 +8,8 @@ package org.wysko.autogeokt.operation
  */
 enum class OperationCategory(
     val title: String,
-    val icon: String
+    val icon: String,
 ) {
     GEODETIC_COMPUTATIONS("Geodetic Computations", "/icons/public.svg"),
-    COORDINATE_GEOMETRY("Coordinate Geometry", "/icons/cogo.svg")
+    COORDINATE_GEOMETRY("Coordinate Geometry", "/icons/cogo.svg"),
 }

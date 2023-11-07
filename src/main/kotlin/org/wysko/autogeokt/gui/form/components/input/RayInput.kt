@@ -26,7 +26,7 @@ fun RayInput(
     descriptionText: String = "",
     isShowError: Boolean = false,
     isOptional: Boolean = false,
-    setIsMutated: (Boolean) -> Unit
+    setIsMutated: (Boolean) -> Unit,
 ) {
     val d = remember { mutableStateOf(value?.direction?.degrees?.toString() ?: "") }
     val m = remember { mutableStateOf(value?.direction?.minutes?.toString() ?: "") }
@@ -37,9 +37,8 @@ fun RayInput(
 
     // On value change, update the value
     LaunchedEffect(listOf(d.value, m.value, s.value, x.value, y.value)) {
-        val validate = DegreesMinutesSecondsInputError.validate(d.value, m.value, s.value).plus(
-            StationInputError.validate(x.value, y.value)
-        )
+        val validate = DegreesMinutesSecondsInputError.validate(d.value, m.value, s.value)
+            .plus(StationInputError.validate(x.value, y.value))
         setErrors(validate)
         if (validate.isEmpty()) {
             onValueChange(
@@ -48,13 +47,14 @@ fun RayInput(
                     direction = DegreesMinutesSeconds(
                         d.value.toInt(),
                         m.value.toInt(),
-                        s.value.toDouble()
-                    )
-                )
+                        s.value.toDouble(),
+                    ),
+                ),
             )
         } else {
             onValueChange(null)
         }
+
         if (d.value.isNotBlank() || m.value.isNotBlank() || s.value.isNotBlank() || x.value.isNotBlank() || y.value.isNotBlank()) {
             setIsMutated(true)
         } else {
@@ -67,7 +67,7 @@ fun RayInput(
         errors = errors,
         descriptionText = descriptionText,
         isOptional = isOptional,
-        title = label
+        title = label,
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -83,12 +83,12 @@ fun StationInput(
     x: MutableState<String>,
     y: MutableState<String>,
     errors: Set<InputError>?,
-    isShowError: Boolean
+    isShowError: Boolean,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         TextField(
             value = x.value,
@@ -96,7 +96,7 @@ fun StationInput(
             label = { Text("X") },
             modifier = Modifier.weight(1f),
             isError = isShowError && errors?.any() == true,
-            singleLine = true
+            singleLine = true,
         )
         TextField(
             value = y.value,
@@ -104,7 +104,7 @@ fun StationInput(
             label = { Text("Y") },
             modifier = Modifier.weight(1f),
             isError = isShowError && errors?.any() == true,
-            singleLine = true
+            singleLine = true,
         )
     }
 }

@@ -2,22 +2,17 @@ package org.wysko.autogeokt.gui.form
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.wysko.autogeokt.geospatial.DegreesMinutesSeconds
 import org.wysko.autogeokt.geospatial.Ellipsoid
 import org.wysko.autogeokt.gui.form.components.FormField
-import org.wysko.autogeokt.gui.form.components.input.DegreesMinutesSecondsInput
-import org.wysko.autogeokt.gui.form.components.input.EllipsoidInput
-import org.wysko.autogeokt.gui.form.components.input.RayInput
-import org.wysko.autogeokt.gui.form.components.input.TitleInput
+import org.wysko.autogeokt.gui.form.components.input.*
 import org.wysko.autogeokt.operation.OperationData
 
 @Composable
@@ -28,7 +23,7 @@ fun <D : OperationData> GenerateForm(formDetails: FormDetails<D>, onSubmit: (tit
     val showErrors = remember { mutableStateOf(false) }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Column {
             Text(formDetails.operationDetails.title, style = MaterialTheme.typography.headlineMedium)
@@ -40,7 +35,7 @@ fun <D : OperationData> GenerateForm(formDetails: FormDetails<D>, onSubmit: (tit
             errors = errors.value["title"],
             setErrors = { errors.value += ("title" to it) },
             isShowError = showErrors.value,
-            canBeTemporary = formDetails.canBeTemporary
+            canBeTemporary = formDetails.canBeTemporary,
         )
         // Instance form fields
         formDetails.formContents.forEach { field ->
@@ -53,7 +48,7 @@ fun <D : OperationData> GenerateForm(formDetails: FormDetails<D>, onSubmit: (tit
                     isShowError = showErrors.value,
                     errors = errors.value[field.data.name],
                     setErrors = { errors.value += (field.data.name to it) },
-                    setIsMutated = { isMutated.value += (field.data.name to it) }
+                    setIsMutated = { isMutated.value += (field.data.name to it) },
                 )
 
                 is FormField.DegreesMinutesSecondsInput -> DegreesMinutesSecondsInput(
@@ -65,8 +60,9 @@ fun <D : OperationData> GenerateForm(formDetails: FormDetails<D>, onSubmit: (tit
                     isOptional = field.data.isOptional,
                     errors = errors.value[field.data.name],
                     setErrors = { errors.value += (field.data.name to it) },
-                    setIsMutated = { isMutated.value += (field.data.name to it) }
+                    setIsMutated = { isMutated.value += (field.data.name to it) },
                 )
+
                 is FormField.RayInput -> RayInput(
                     value = data.value[field.data.name] as org.wysko.autogeokt.geospatial.Ray?,
                     onValueChange = { data.value += (field.data.name to it) },
@@ -76,10 +72,32 @@ fun <D : OperationData> GenerateForm(formDetails: FormDetails<D>, onSubmit: (tit
                     isOptional = field.data.isOptional,
                     errors = errors.value[field.data.name],
                     setErrors = { errors.value += (field.data.name to it) },
-                    setIsMutated = { isMutated.value += (field.data.name to it) }
+                    setIsMutated = { isMutated.value += (field.data.name to it) },
                 )
 
-                else -> TODO("FormField GUI for ${field::class} is not yet implemented")
+                is FormField.NumberInput -> RealNumberInput(
+                    value = data.value[field.data.name] as Double?,
+                    onValueChange = { data.value += (field.data.name to it) },
+                    label = field.data.title,
+                    descriptionText = field.data.description,
+                    isShowError = showErrors.value && errors.value[field.data.name]?.any() == true && (!field.data.isOptional || isMutated.value[field.data.name] == true),
+                    isOptional = field.data.isOptional,
+                    errors = errors.value[field.data.name],
+                    setErrors = { errors.value += (field.data.name to it) },
+                    setIsMutated = { isMutated.value += (field.data.name to it) },
+                )
+
+                is FormField.CircleInput -> CircleInput(
+                    value = data.value[field.data.name] as org.wysko.autogeokt.geospatial.Circle?,
+                    onValueChange = { data.value += (field.data.name to it) },
+                    label = field.data.title,
+                    descriptionText = field.data.description,
+                    isShowError = showErrors.value && errors.value[field.data.name]?.any() == true && (!field.data.isOptional || isMutated.value[field.data.name] == true),
+                    isOptional = field.data.isOptional,
+                    errors = errors.value[field.data.name],
+                    setErrors = { errors.value += (field.data.name to it) },
+                    setIsMutated = { isMutated.value += (field.data.name to it) },
+                )
             }
         }
 
@@ -97,7 +115,7 @@ fun <D : OperationData> GenerateForm(formDetails: FormDetails<D>, onSubmit: (tit
                 if (relevantErrors.values.flatten().isEmpty()) {
                     onSubmit(data.value["title"]?.toString(), formDetails.toData(data.value))
                 }
-            }
+            },
         ) {
             Text("Submit")
         }

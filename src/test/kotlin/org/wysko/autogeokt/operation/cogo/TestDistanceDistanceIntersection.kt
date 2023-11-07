@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.wysko.autogeokt.geospatial.Cartesian2D
 import org.wysko.autogeokt.geospatial.Circle
+import org.wysko.autogeokt.operation.DistanceDistanceIntersection
+import org.wysko.autogeokt.operation.DistanceDistanceIntersectionData
 import kotlin.test.assertEquals
 
 class TestDistanceDistanceIntersection {
@@ -12,13 +14,13 @@ class TestDistanceDistanceIntersection {
         val circle1 = Circle(Cartesian2D(2851.28, 299.4), 2000.0)
         val circle2 = Circle(Cartesian2D(3898.72, 2870.15), 1500.0)
 
-        val intersection = DistanceDistanceIntersection(Pair(circle1, circle2))
+        val intersection = DistanceDistanceIntersection(DistanceDistanceIntersectionData(circle1, circle2))
 
-        assertEquals(4464.85, intersection.result.first.x, 0.01)
-        assertEquals(1481.09, intersection.result.first.y, 0.01)
+        assertEquals(4464.85, intersection.result.solution1.x, 0.01)
+        assertEquals(1481.09, intersection.result.solution1.y, 0.01)
 
-        assertEquals(2523.02, intersection.result.second.x, 0.01)
-        assertEquals(2272.28, intersection.result.second.y, 0.01)
+        assertEquals(2523.02, intersection.result.solution2.x, 0.01)
+        assertEquals(2272.28, intersection.result.solution2.y, 0.01)
     }
 
     @Test
@@ -26,7 +28,14 @@ class TestDistanceDistanceIntersection {
         val circle1 = Circle(Cartesian2D(2851.28, 299.4), 2000.0)
         val circle2 = Circle(Cartesian2D(2851.28, 299.4), 2000.0)
 
-        assertThrows<IllegalArgumentException> { DistanceDistanceIntersection(Pair(circle1, circle2)).result }
+        assertThrows<IllegalArgumentException> {
+            DistanceDistanceIntersection(
+                DistanceDistanceIntersectionData(
+                    circle1,
+                    circle2
+                )
+            ).result
+        }
     }
 
     @Test
@@ -34,6 +43,13 @@ class TestDistanceDistanceIntersection {
         val circle1 = Circle(Cartesian2D(4192.56, 6847.32), 500.0)
         val circle2 = Circle(Cartesian2D(2398.13, 2251.76), 500.0)
 
-        assertThrows<IllegalArgumentException> { DistanceDistanceIntersection(Pair(circle1, circle2)).result }
+        assertThrows<IllegalArgumentException> {
+            DistanceDistanceIntersection(
+                DistanceDistanceIntersectionData(
+                    circle1,
+                    circle2
+                )
+            ).result
+        }
     }
 }

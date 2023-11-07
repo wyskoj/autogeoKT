@@ -1,5 +1,6 @@
 package org.wysko.autogeokt.geospatial
 
+import kotlinx.serialization.Serializable
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -9,11 +10,13 @@ import kotlin.math.sqrt
  *
  * @property a The semi-major axis of the ellipsoid.
  * @property b The semi-minor axis of the ellipsoid.
+ * @property name The name of the ellipsoid.
  */
+@Serializable
 data class Ellipsoid(
     val a: Double,
     val b: Double,
-    val name: String = ""
+    val name: String = "",
 ) {
     /**
      * The flattening of the ellipsoid.
@@ -40,23 +43,23 @@ data class Ellipsoid(
      */
     val secondEccentricity: Double by lazy { sqrt(a.pow(2) / b.pow(2) - 1) }
 
+    override fun toString(): String = name
 
     companion object {
+
         /**
          * The WGS84 ellipsoid.
          */
-        val WGS84 = Ellipsoid(6378137.0, 6356752.314245179, "WGS84")
+        val WGS84 = Ellipsoid(6_378_137.0, 6_356_752.314245179, "WGS84")
 
         /**
          * The GRS80 ellipsoid.
          */
-        val GRS80 = Ellipsoid(6378137.0, 6356752.314140348, "GRS80")
+        val GRS80 = Ellipsoid(6_378_137.0, 6_356_752.314140348, "GRS80")
 
         /**
          * The Clarke 1866 ellipsoid.
          */
-        val CLARKE_1866 = Ellipsoid(6378206.4, 6356583.8, "Clarke 1866")
+        val CLARKE_1866 = Ellipsoid(6_378_206.4, 6_356_583.8, "Clarke 1866")
     }
-
-    override fun toString(): String = name
 }

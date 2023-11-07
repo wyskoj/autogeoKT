@@ -1,4 +1,4 @@
-package org.wysko.autogeokt.operation.leastsquares
+package org.wysko.autogeokt.operation
 
 import org.jetbrains.kotlinx.multik.api.d1array
 import org.jetbrains.kotlinx.multik.api.mk
@@ -6,22 +6,18 @@ import org.jetbrains.kotlinx.multik.ndarray.data.D1Array
 import org.jetbrains.kotlinx.multik.ndarray.data.D2Array
 import org.jetbrains.kotlinx.multik.ndarray.data.get
 import org.jetbrains.kotlinx.multik.ndarray.data.set
-import org.wysko.autogeokt.operation.Operation
-import org.wysko.autogeokt.operation.OperationData
-import org.wysko.autogeokt.operation.OperationResult
-import org.wysko.autogeokt.operation.PropertyTitle
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.reflect.KProperty
 
 /**
- * Performs a general linear least-squares adjustment.
+ * Performs an "indirect observation" linear least-squares adjustment.
  */
-data class GeneralLeastSquares(
-    override val data: GeneralLeastSquaresData
-) : Operation<GeneralLeastSquaresData, GeneralLeastSquaresResult> {
+data class IndirectObservationLeastSquares(
+    override val data: IndirectObservationLeastSquaresData,
+) : Operation<IndirectObservationLeastSquaresData, IndirectObservationLeastSquaresResult>() {
 
-    override val result: GeneralLeastSquaresResult by lazy {
+    override val result: IndirectObservationLeastSquaresResult by lazy {
         // This implementation is inspired by Adjustment Computations by Charles Ghilani, Chapter 26
 
         // Step 1: Form normal equations and constants vector directly from observations
@@ -63,27 +59,29 @@ data class GeneralLeastSquares(
         // (Ghilani 26.5)
 
         val y = mk.d1array<Double>(data.unknowns) { 0.0 }
-        (0..<data.unknowns).forEach { i ->
+        for (i in 0..<data.unknowns) {
             val sum = (0..<i).sumOf { j -> -cholesky[flattenIndex(i, j)] * y[j] } + constants[i]
             y[i] = sum / cholesky[flattenIndex(i, i)]
         }
 
         val x = mk.d1array<Double>(data.unknowns) { 0.0 }
-        (data.unknowns - 1 downTo 0).forEach { i ->
+        for (i in data.unknowns - 1 downTo 0) {
             val sum = (i + 1..<data.unknowns).sumOf { j -> -cholesky[flattenIndex(j, i)] * x[j] } + y[i]
             x[i] = sum / cholesky[flattenIndex(i, i)]
         }
 
-        /// Part B: Residuals ///
+        // / Part B: Residuals ///
         val variances = mk.d1array<Double>(data.observations) { index ->
             (0..<data.unknowns).sumOf { data.a[index, it] * x[it] } - data.l[index]
         }
 
-        /// Part C: Reference standard deviation ///
-        val refStdDev =
-            sqrt((0..<data.observations).sumOf { i -> data.w[i] * variances[i].pow(2) } / (data.observations - data.unknowns))
+        // / Part C: Reference standard deviation ///
+        val refStdDev = sqrt(
+            (0..<data.observations).sumOf { i -> data.w[i] * variances[i].pow(2) } /
+                (data.observations - data.unknowns),
+        )
 
-        GeneralLeastSquaresResult(x, variances, refStdDev)
+        IndirectObservationLeastSquaresResult(x, variances, refStdDev)
     }
 
     private fun flattenIndex(row: Int, column: Int): Int {
@@ -103,7 +101,7 @@ data class GeneralLeastSquares(
  * @property l The "L" matrix.
  * @property w The weight matrix.
  */
-data class GeneralLeastSquaresData(
+data class IndirectObservationLeastSquaresData(
     @PropertyTitle("Unknowns")
     val unknowns: Int,
     @PropertyTitle("Observations")
@@ -113,7 +111,7 @@ data class GeneralLeastSquaresData(
     @PropertyTitle("L matrix")
     val l: D1Array<Double>,
     @PropertyTitle("Weight matrix")
-    val w: D1Array<Double>
+    val w: D1Array<Double>,
 ) : OperationData() {
     init {
         // Check all matrix dimensions
@@ -124,11 +122,11 @@ data class GeneralLeastSquaresData(
     }
 
     override val propertyOrder: List<KProperty<*>> = listOf(
-        GeneralLeastSquaresData::unknowns,
-        GeneralLeastSquaresData::observations,
-        GeneralLeastSquaresData::a,
-        GeneralLeastSquaresData::l,
-        GeneralLeastSquaresData::w
+        IndirectObservationLeastSquaresData::unknowns,
+        IndirectObservationLeastSquaresData::observations,
+        IndirectObservationLeastSquaresData::a,
+        IndirectObservationLeastSquaresData::l,
+        IndirectObservationLeastSquaresData::w,
     )
 }
 
@@ -137,14 +135,14 @@ data class GeneralLeastSquaresData(
  * @property v The residuals of each observation.
  * @property so The reference standard deviation.
  */
-data class GeneralLeastSquaresResult(
+data class IndirectObservationLeastSquaresResult(
     val x: D1Array<Double>,
     val v: D1Array<Double>,
-    val so: Double
+    val so: Double,
 ) : OperationResult() {
     override val propertyOrder: List<KProperty<*>> = listOf(
-        GeneralLeastSquaresResult::x,
-        GeneralLeastSquaresResult::v,
-        GeneralLeastSquaresResult::so
+        IndirectObservationLeastSquaresResult::x,
+        IndirectObservationLeastSquaresResult::v,
+        IndirectObservationLeastSquaresResult::so,
     )
 }

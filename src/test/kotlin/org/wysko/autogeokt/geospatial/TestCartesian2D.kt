@@ -1,8 +1,7 @@
-package org.wysko.autogeokt
+package org.wysko.autogeokt.geospatial
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
-import org.wysko.autogeokt.geospatial.Cartesian2D
 import org.wysko.autogeokt.geospatial.DegreesMinutesSeconds.Companion.toRadians
 import kotlin.test.Test
 import kotlin.test.assertEquals
