@@ -15,6 +15,7 @@ build/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+.idea/git_toolbox_prj.xml
 
 ### Eclipse ###
 .apt_generated

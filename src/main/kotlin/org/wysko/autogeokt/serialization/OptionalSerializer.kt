@@ -2,27 +2,27 @@ package org.wysko.autogeokt.serialization
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import java.util.Optional
+import java.util.*
 
 /**
- * A serializer for [Optional] values.
+ * Serializer for [Optional] class.
  */
-class OptionalSerializer<T>(private val serializer: KSerializer<T>) : KSerializer<Optional<T>> {
-    override val descriptor: SerialDescriptor = serializer.descriptor
+@ExperimentalSerializationApi
+class OptionalSerializer<T : Any>(dataSerializer: KSerializer<T>) : KSerializer<Optional<T>> {
+    private val nullableSerializer: KSerializer<T?> = dataSerializer.nullable
 
-    @OptIn(ExperimentalSerializationApi::class)
-    override fun serialize(encoder: Encoder, value: Optional<T>) =
-        if (value.isPresent) serializer.serialize(encoder, value.get()) else encoder.encodeNull()
+    override val descriptor: SerialDescriptor = nullableSerializer.descriptor
 
-    @OptIn(ExperimentalSerializationApi::class)
-    @Suppress("UNCHECKED_CAST")
-    override fun deserialize(decoder: Decoder): Optional<T> =
-        if (decoder.decodeNotNullMark()) {
-            Optional.ofNullable(serializer.deserialize(decoder)) as Optional<T>
-        } else {
-            Optional.empty<T>() as Optional<T>
-        }
+    override fun deserialize(decoder: Decoder): Optional<T> {
+        val nullableValue: T? = decoder.decodeNullableSerializableValue(nullableSerializer)
+        return Optional.ofNullable(nullableValue)
+    }
+
+    override fun serialize(encoder: Encoder, value: Optional<T>) {
+        encoder.encodeNullableSerializableValue(nullableSerializer, value.orElse(null))
+    }
 }

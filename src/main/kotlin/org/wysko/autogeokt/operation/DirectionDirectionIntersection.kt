@@ -2,6 +2,7 @@ package org.wysko.autogeokt.operation
 
 import org.wysko.autogeokt.geospatial.Cartesian2D
 import org.wysko.autogeokt.geospatial.Ray
+import org.wysko.autogeokt.gui.I18n
 import org.wysko.autogeokt.gui.form.FormDetails
 import org.wysko.autogeokt.gui.form.Formable
 import org.wysko.autogeokt.gui.form.components.FormField
@@ -25,11 +26,11 @@ data class DirectionDirectionIntersection(
                 DECI_ARC_SECOND,
         ) {
             // If tighter than 0.1" (0.000000484 radians), let's call it parallel.
-            "The directions must not be parallel."
+            I18n["direction_direction_intersection_err_parallel"].value
         }
 
         require(data.ray1.point != data.ray2.point) {
-            "Points must not be coincident."
+            I18n["direction_direction_intersection_err_coincident"].value
         }
 
         val pointsDistance = data.ray1.point distanceTo data.ray2.point

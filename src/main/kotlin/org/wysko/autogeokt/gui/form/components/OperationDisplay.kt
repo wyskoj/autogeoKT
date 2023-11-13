@@ -1,21 +1,38 @@
 package org.wysko.autogeokt.gui.form.components
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.wysko.autogeokt.gui.I18n
 import org.wysko.autogeokt.operation.OperationData
 import org.wysko.autogeokt.operation.OperationResult
 import org.wysko.autogeokt.operation.PropertyTitle
-import java.util.Optional
+import java.util.*
 import kotlin.reflect.full.findAnnotation
+
+private const val ONE_HALF = 0.5f
 
 /**
  * Displays both the operation data and result in a dialog. This is used for temporary operations.
  *
+ * @param D The type of the operation data.
+ * @param R The type of the operation result.
  * @param data The operation data.
  * @param result The operation result.
  * @param closeDialog A function to close the dialog.
@@ -30,7 +47,7 @@ fun <D : OperationData, R : OperationResult> TemporaryOperationDisplay(data: D, 
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Operation result", style = MaterialTheme.typography.headlineMedium)
+                Text(I18n["operation_result"].value, style = MaterialTheme.typography.headlineMedium)
                 IconButton(onClick = closeDialog) {
                     Icon(
                         painterResource("/icons/close.svg"),
@@ -42,19 +59,27 @@ fun <D : OperationData, R : OperationResult> TemporaryOperationDisplay(data: D, 
             }
             OperationDisplay(data, result)
             Text(
-                "This is a temporary operation. To save it to your list of operations, enter a title before submitting.",
+                I18n["operation_temporary_hint"].value,
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = ONE_HALF),
             )
         }
     }
 }
 
+/**
+ * Displays both the operation data and result in a dialog.
+ *
+ * @param D The type of the operation data.
+ * @param R The type of the operation result.
+ * @param data The operation data.
+ * @param result The operation result.
+ */
 @Composable
 fun <D : OperationData, R : OperationResult> OperationDisplay(data: D, result: R) {
     Row {
         Column(
-            modifier = Modifier.weight(0.5f),
+            modifier = Modifier.weight(ONE_HALF),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text("Data", style = MaterialTheme.typography.titleLarge)
@@ -67,7 +92,7 @@ fun <D : OperationData, R : OperationResult> OperationDisplay(data: D, result: R
         }
         Spacer(modifier = Modifier.width(16.dp))
         Column(
-            modifier = Modifier.weight(0.5f),
+            modifier = Modifier.weight(ONE_HALF),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text("Result", style = MaterialTheme.typography.titleLarge)

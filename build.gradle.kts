@@ -32,7 +32,7 @@ dependencies {
     testImplementation(kotlin("test"))
 
     // KotlinX Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
 
 tasks.test {

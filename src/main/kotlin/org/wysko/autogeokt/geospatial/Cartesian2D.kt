@@ -36,7 +36,7 @@ class Cartesian2D(
         val dX = other.x - this.x
         val dY = other.y - this.y
 
-        require(!(dX == 0.0 && dY == 0.0)) { "Points must not be coincident" }
+        require(!(dX == 0.0 && dY == 0.0)) { "Points must not be coincident." }
 
         return (PI / 2 - atan2(dY, dX)).let { azimuth ->
             if (azimuth < 0.0) {

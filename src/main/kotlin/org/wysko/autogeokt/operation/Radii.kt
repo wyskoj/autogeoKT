@@ -1,5 +1,6 @@
 package org.wysko.autogeokt.operation
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.wysko.autogeokt.geospatial.DegreesMinutesSeconds
@@ -9,7 +10,7 @@ import org.wysko.autogeokt.gui.form.Formable
 import org.wysko.autogeokt.gui.form.components.FormField
 import org.wysko.autogeokt.gui.form.components.InputData
 import org.wysko.autogeokt.serialization.OptionalSerializer
-import java.util.Optional
+import java.util.*
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
@@ -20,38 +21,29 @@ import kotlin.reflect.KProperty
  * Computes the radii of curvature of the ellipsoid at a given latitude and azimuth.
  */
 @Serializable
-data class Radii(
+class Radii(
     override val data: RadiiData,
 ) : Operation<RadiiData, RadiiResult>() {
 
     override val result: RadiiResult by lazy {
-        val radiusMeridian = calculateRadiusMeridian()
-        val radiusPrimeVertical = calculateRadiusPrimeVertical()
-        val radiusAzimuth = calculateRadiusAzimuth(radiusMeridian, radiusPrimeVertical)
+        val radiusMeridian = radiusInMeridian()
+        val radiusPrimeVertical = radiusPrimeVertical()
+        val radiusAzimuth = radiusAzimuth(radiusMeridian, radiusPrimeVertical)
         RadiiResult(radiusPrimeVertical, radiusMeridian, radiusAzimuth)
     }
 
-    /**
-     * Calculates the radius in the meridian.
-     */
     @Suppress("MagicNumber")
-    private fun calculateRadiusMeridian(): Double =
-        (data.ellipsoid.a * (1 - data.ellipsoid.eccentricitySquared)) / (
+    private fun radiusInMeridian(): Double =
+        data.ellipsoid.a * (1 - data.ellipsoid.eccentricitySquared) / (
             1 - data.ellipsoid.eccentricitySquared * sin(
                 data.latitude.toRadians(),
             ).pow(2)
             ).pow(1.5)
 
-    /**
-     * Calculates the radius in the prime vertical.
-     */
-    private fun calculateRadiusPrimeVertical(): Double =
+    private fun radiusPrimeVertical(): Double =
         data.ellipsoid.a / sqrt(1 - data.ellipsoid.eccentricitySquared * sin(data.latitude.toRadians()).pow(2))
 
-    /**
-     * Calculates the radius at a given azimuth.
-     */
-    private fun calculateRadiusAzimuth(radiusMeridian: Double, radiusPrimeVertical: Double): Optional<Double> =
+    private fun radiusAzimuth(radiusMeridian: Double, radiusPrimeVertical: Double): Optional<Double> =
         data.azimuth.map { azimuth ->
             1 / (
                 cos(azimuth.toRadians()).pow(2) / radiusMeridian + sin(azimuth.toRadians()).pow(2) /
@@ -89,7 +81,7 @@ data class Radii(
                 RadiiData(
                     ellipsoid = data["ellipsoid"] as Ellipsoid,
                     latitude = data["latitude"] as DegreesMinutesSeconds,
-                    azimuth = Optional.ofNullable(data["azimuth"] as DegreesMinutesSeconds?),
+                    azimuth = Optional.ofNullable(data["azimuth"] as? DegreesMinutesSeconds?),
                 )
             },
             canBeTemporary = true,
@@ -104,7 +96,9 @@ data class Radii(
  * @property azimuth Azimuth at which to calculate the radii of curvature at an azimuth, if any.
  */
 @Serializable
-data class RadiiData(
+data class RadiiData
+@OptIn(ExperimentalSerializationApi::class)
+constructor(
     @PropertyTitle("Ellipsoid")
     val ellipsoid: Ellipsoid,
     @PropertyTitle("Latitude")
@@ -128,7 +122,9 @@ data class RadiiData(
  * @property radiusAzimuth Radius of curvature at a given azimuth, if any.
  */
 @Serializable
-data class RadiiResult(
+data class RadiiResult
+@OptIn(ExperimentalSerializationApi::class)
+constructor(
     @PropertyTitle("Radius of Curvature in the Prime Vertical")
     val radiusPrimeVertical: Double,
     @PropertyTitle("Radius of Curvature in the Meridian")

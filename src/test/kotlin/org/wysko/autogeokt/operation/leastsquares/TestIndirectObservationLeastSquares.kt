@@ -11,11 +11,13 @@ import kotlin.test.assertEquals
 class TestIndirectObservationLeastSquares {
     @Test
     fun `Should work with a simple example`() {
-        val a = mk.ndarray(mk[
-            mk[1.0, 1.0],
-            mk[2.0, -1.0],
-            mk[1.0, -1.0]
-        ])
+        val a = mk.ndarray(
+            mk[
+                mk[1.0, 1.0],
+                mk[2.0, -1.0],
+                mk[1.0, -1.0],
+            ],
+        )
         val l = mk.ndarray(mk[3.0, 1.5, 0.2])
 
         val w = mk.ndarray(mk[1.0, 1.0, 1.0])
