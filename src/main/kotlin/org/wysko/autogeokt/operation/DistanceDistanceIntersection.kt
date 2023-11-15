@@ -4,6 +4,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.wysko.autogeokt.geospatial.Cartesian2D
 import org.wysko.autogeokt.geospatial.Circle
+import org.wysko.autogeokt.geospatial.azimuthTo
+import org.wysko.autogeokt.geospatial.distanceTo
 import org.wysko.autogeokt.gui.form.FormDetails
 import org.wysko.autogeokt.gui.form.Formable
 import org.wysko.autogeokt.gui.form.components.FormField
@@ -90,6 +92,10 @@ data class DistanceDistanceIntersection(
     }
 }
 
+/**
+ * @property circle1 The first circle (station 1).
+ * @property circle2 The second circle (station 2).
+ */
 @Serializable
 data class DistanceDistanceIntersectionData(
     @PropertyTitle("Circle 1")
@@ -104,6 +110,12 @@ data class DistanceDistanceIntersectionData(
     )
 }
 
+/**
+ * No guarantees are made about the order of the solutions.
+ *
+ * @property solution1 The first solution for the intersection point.
+ * @property solution2 The second solution for the intersection point.
+ */
 @Serializable
 data class DistanceDistanceIntersectionResult(
     @PropertyTitle("Solution 1")

@@ -48,7 +48,7 @@ data class Ellipsoid(
     companion object {
 
         /**
-         * The WGS84 ellipsoid.
+         * The "World Geodetic System of 1984" ellipsoid.
          */
         val WGS84 = Ellipsoid(6_378_137.0, 6_356_752.314245179, "WGS84")
 

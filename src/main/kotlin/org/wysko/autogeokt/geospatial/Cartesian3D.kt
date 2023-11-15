@@ -1,5 +1,6 @@
 package org.wysko.autogeokt.geospatial
 
+import kotlinx.serialization.Serializable
 import org.jetbrains.kotlinx.multik.api.mk
 import org.jetbrains.kotlinx.multik.api.ndarray
 import org.jetbrains.kotlinx.multik.ndarray.data.D2
@@ -16,7 +17,8 @@ import kotlin.math.sqrt
  * @property y The y coordinate.
  * @property z The z coordinate.
  */
-class Cartesian3D(
+@Serializable
+data class Cartesian3D(
     val x: Double,
     val y: Double,
     val z: Double,
@@ -37,15 +39,16 @@ class Cartesian3D(
     val matrix: NDArray<Double, D2> by lazy {
         mk.ndarray(mk[mk[x], mk[y], mk[z]])
     }
-
-    /**
-     * Calculates the Euclidean distance between two [Cartesian3D] points.
-     *
-     * @param other The Cartesian3D point to calculate the distance to.
-     * @return The slope distance between this point and the other point.
-     */
-    infix fun distanceTo(other: Cartesian3D) = sqrt((x - other.x).pow(2) + (y - other.y).pow(2) + (z - other.z).pow(2))
 }
+
+/**
+ * Calculates the Euclidean distance between two [Cartesian3D] points.
+ *
+ * @param other The Cartesian3D point to calculate the distance to.
+ * @return The slope distance between this point and the other point.
+ */
+infix fun Cartesian3D.distanceTo(other: Cartesian3D) =
+    sqrt((x - other.x).pow(2) + (y - other.y).pow(2) + (z - other.z).pow(2))
 
 /**
  * Calculates the centroid of a list of Cartesian3D points.

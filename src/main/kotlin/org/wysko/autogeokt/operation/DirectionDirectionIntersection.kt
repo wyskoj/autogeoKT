@@ -2,6 +2,8 @@ package org.wysko.autogeokt.operation
 
 import org.wysko.autogeokt.geospatial.Cartesian2D
 import org.wysko.autogeokt.geospatial.Ray
+import org.wysko.autogeokt.geospatial.azimuthTo
+import org.wysko.autogeokt.geospatial.distanceTo
 import org.wysko.autogeokt.gui.I18n
 import org.wysko.autogeokt.gui.form.FormDetails
 import org.wysko.autogeokt.gui.form.Formable

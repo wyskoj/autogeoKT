@@ -13,39 +13,39 @@ import kotlin.math.sqrt
  * @property y The y (northing) coordinate.
  */
 @Serializable
-class Cartesian2D(
+data class Cartesian2D(
     val x: Double,
     val y: Double,
 ) {
-    /**
-     * Calculates the Euclidean distance between two [Cartesian2D] points.
-     *
-     * @param other The Cartesian2D point to calculate the distance to.
-     * @return The distance between this point and the other point.
-     */
-    infix fun distanceTo(other: Cartesian2D) = sqrt((x - other.x).pow(2) + (y - other.y).pow(2))
+    override fun toString(): String = "(x=$x, y=$y)"
+}
 
-    /**
-     * Calculates the azimuth from this point to another point.
-     *
-     * @param other The Cartesian2D point to calculate the azimuth to.
-     * @throws IllegalArgumentException if the two points are coincident.
-     * @return The azimuth from this point to the other point, in radians.
-     */
-    infix fun azimuthTo(other: Cartesian2D): Double {
-        val dX = other.x - this.x
-        val dY = other.y - this.y
+/**
+ * Calculates the Euclidean distance between two [Cartesian2D] points.
+ *
+ * @param other The Cartesian2D point to calculate the distance to.
+ * @return The distance between this point and the other point.
+ */
+infix fun Cartesian2D.distanceTo(other: Cartesian2D) = sqrt((x - other.x).pow(2) + (y - other.y).pow(2))
 
-        require(!(dX == 0.0 && dY == 0.0)) { "Points must not be coincident." }
+/**
+ * Calculates the azimuth from this point to another point.
+ *
+ * @param other The Cartesian2D point to calculate the azimuth to.
+ * @throws IllegalArgumentException if the two points are coincident.
+ * @return The azimuth from this point to the other point, in radians.
+ */
+infix fun Cartesian2D.azimuthTo(other: Cartesian2D): Double {
+    val dX = other.x - this.x
+    val dY = other.y - this.y
 
-        return (PI / 2 - atan2(dY, dX)).let { azimuth ->
-            if (azimuth < 0.0) {
-                azimuth + 2 * PI
-            } else {
-                azimuth
-            }
+    require(!(dX == 0.0 && dY == 0.0)) { "Points must not be coincident." }
+
+    return (PI / 2 - atan2(dY, dX)).let { azimuth ->
+        if (azimuth < 0.0) {
+            azimuth + 2 * PI
+        } else {
+            azimuth
         }
     }
-
-    override fun toString(): String = "(x=$x, y=$y)"
 }

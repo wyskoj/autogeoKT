@@ -13,6 +13,7 @@ import org.jetbrains.kotlinx.multik.ndarray.operations.times
 import org.wysko.autogeokt.geospatial.Cartesian3D
 import org.wysko.autogeokt.geospatial.HelmertTransformation
 import org.wysko.autogeokt.geospatial.centroid
+import org.wysko.autogeokt.geospatial.distanceTo
 import org.wysko.autogeokt.geospatial.transformPoints
 import org.wysko.autogeokt.linalg.GeneralLeastSquares
 import org.wysko.autogeokt.linalg.LeastSquaresDivergenceException
