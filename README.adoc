@@ -1,0 +1,16 @@
+= AutoGeo
+
+AutoGeo, written in Kotlin. It's a geospatial software package that automates common tasks in geospatial data processing.
+
+This version supersedes the TypeScript version, but is in heavy development.
+
+== Building
+
+[source,bash]
+----
+./gradlew build
+----
+
+== License
+
+This project is licensed under the GNU General Public License v3.0. See the https://github.com/wyskoj/autogeokt/blob/master/LICENSE[license file] for more details.
