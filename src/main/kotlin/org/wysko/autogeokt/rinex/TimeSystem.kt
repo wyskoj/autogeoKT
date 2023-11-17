@@ -29,10 +29,9 @@ sealed class TimeSystem(val code: String) {
          * @param code The RINEX time system code.
          * @return The corresponding [TimeSystem].
          */
-        fun fromString(code: String): TimeSystem {
-            return TimeSystem::class.sealedSubclasses
+        fun fromString(code: String): TimeSystem =
+            TimeSystem::class.sealedSubclasses
                 .map { it.objectInstance!! }
                 .first { it.code == code }
-        }
     }
 }

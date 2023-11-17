@@ -1,15 +1,23 @@
 package org.wysko.autogeokt.rinex
 
+import org.wysko.autogeokt.rinex.RinexObservationData.Header.HeaderData
+import org.wysko.autogeokt.rinex.RinexObservationData.Header.HeaderData.GPSWavelengthFactors
+import org.wysko.autogeokt.rinex.RinexObservationData.ObservationDataRecord
+import java.io.BufferedReader
+import kotlin.reflect.KClass
+
 private const val UNEXPECTED_END_OF_FILE = "Unexpected end of file"
 
 /**
  * A parser for RINEX files.
  */
+@Suppress("MagicNumber")
 object RinexParser {
 
     /**
      * A parser for RINEX observation files.
      */
+    @Suppress("TooManyFunctions")
     object ObservationFile {
 
         /**
@@ -59,8 +67,8 @@ object RinexParser {
                     HeaderData.ApproximatePosition::class,
                     HeaderData.AntennaOffset::class,
                     HeaderData.ObservationInfo::class,
-                    HeaderData.TimeOfFirstObservation::class
-                )
+                    HeaderData.TimeOfFirstObservation::class,
+                ),
             ) {
                 "RINEX observation file header is missing required fields"
             }
@@ -87,9 +95,7 @@ object RinexParser {
             return HeaderData.RinexInfo(version, satelliteSystem)
         }
 
-        private fun parseComment(line: String): HeaderData.Comment {
-            return HeaderData.Comment(line.substring(0..<60).trim())
-        }
+        private fun parseComment(line: String): HeaderData.Comment = HeaderData.Comment(line.substring(0..<60).trim())
 
         private fun parsePgmRunByDate(line: String): HeaderData.ProgramInfo {
             val program = line.substring(0..<20).trim()
@@ -99,13 +105,11 @@ object RinexParser {
             return HeaderData.ProgramInfo(program, agency, date)
         }
 
-        private fun parseMarkerName(line: String): HeaderData.MarkerName {
-            return HeaderData.MarkerName(line.substring(0..<60).trim())
-        }
+        private fun parseMarkerName(line: String): HeaderData.MarkerName =
+            HeaderData.MarkerName(line.substring(0..<60).trim())
 
-        private fun parseMarkerNumber(line: String): HeaderData.MarkerNumber {
-            return HeaderData.MarkerNumber(line.substring(0..<20).trim())
-        }
+        private fun parseMarkerNumber(line: String): HeaderData.MarkerNumber =
+            HeaderData.MarkerNumber(line.substring(0..<20).trim())
 
         private fun parseObserverAgency(line: String): HeaderData.ObserverInfo {
             val observer = line.substring(0..<20).trim()
@@ -147,9 +151,11 @@ object RinexParser {
 
         private fun parseWavelengthFactor(line: String): GPSWavelengthFactors {
             val l1 =
-                GPSWavelengthFactors.WavelengthFactor.fromInt(line.substring(0..<6).trim().toInt().also {
-                    require(it != 0) { "L1 wavelength factor cannot be 0 (single frequency)" }
-                })
+                GPSWavelengthFactors.WavelengthFactor.fromInt(
+                    line.substring(0..<6).trim().toInt().also {
+                        require(it != 0) { "L1 wavelength factor cannot be 0 (single frequency)" }
+                    },
+                )
             val l2 = GPSWavelengthFactors.WavelengthFactor.fromInt(line.substring(6..<12).trim().toInt())
             val prnCount = line.substring(12..<18).trim().toInt()
             val prns = mutableListOf<Satellite>()
@@ -175,15 +181,14 @@ object RinexParser {
                 types.map {
                     HeaderData.ObservationInfo.ObservationType(
                         HeaderData.ObservationInfo.ObservationType.ObservationCode.fromString(it[0].toString()),
-                        it[1].toString().toInt()
+                        it[1].toString().toInt(),
                     )
-                }
+                },
             )
         }
 
-        private fun parseInterval(line: String): HeaderData.ObservationalInterval {
-            return HeaderData.ObservationalInterval(line.substring(0..<10).trim().toDouble())
-        }
+        private fun parseInterval(line: String): HeaderData.ObservationalInterval =
+            HeaderData.ObservationalInterval(line.substring(0..<10).trim().toDouble())
 
         private fun parseTime(line: String): Pair<Epoch, String> {
             val year = line.substring(0..<6).trim().toInt()
@@ -201,9 +206,9 @@ object RinexParser {
                     day = day,
                     hour = hour,
                     minute = minute,
-                    second = second
+                    second = second,
                 ),
-                system
+                system,
             )
         }
 
@@ -236,7 +241,7 @@ object RinexParser {
 
         fun parseBody(
             reader: BufferedReader,
-            header: RinexObservationData.Header
+            header: RinexObservationData.Header,
         ): List<ObservationDataRecord> {
             val dataRecords = mutableListOf<ObservationDataRecord>()
             while (true) {
@@ -247,7 +252,7 @@ object RinexParser {
                     day = line.substring(7..8).trim().toInt(),
                     hour = line.substring(10..11).trim().toInt(),
                     minute = line.substring(13..14).trim().toInt(),
-                    second = line.substring(15..26).trim().toDouble()
+                    second = line.substring(15..26).trim().toDouble(),
                 )
                 val flag = ObservationDataRecord.EpochFlag.fromInt(line[28].toString().toInt())
                 val receiverClockOffset = try {
@@ -283,22 +288,26 @@ object RinexParser {
                         var readThisLine = 0
                         while (observationRecord < observationTypeCount && readThisLine++ < 5) {
                             val offset = observationRecord % 5
-                            val observation = line.substring((offset * 16)..<(offset * 16 + 14)).trim().run {
+                            val observation = line.substring(offset * 16..<offset * 16 + 14).trim().run {
                                 if (isBlank()) 0.0 else toDouble()
                             }
                             val lli =
-                                ObservationDataRecord.LossOfLockIndication.fromString(line[(offset * 16 + 14)].toString())
-                            val signalStrength = line[(offset * 16 + 15)].toString().run {
-                                if (isBlank()) ObservationDataRecord.SignalStrength.NotKnownDontCare else ObservationDataRecord.SignalStrength.IntervalProjection(
-                                    toInt()
-                                )
+                                ObservationDataRecord.LossOfLockIndication.fromString(line[offset * 16 + 14].toString())
+                            val signalStrength = line[offset * 16 + 15].toString().run {
+                                if (isBlank()) {
+                                    ObservationDataRecord.SignalStrength.NotKnownDontCare
+                                } else {
+                                    ObservationDataRecord.SignalStrength.IntervalProjection(
+                                        toInt(),
+                                    )
+                                }
                             }
                             observations += ObservationDataRecord.SatelliteObservation(
                                 satellites[satelliteIndex],
                                 observationTypes[observationRecord],
                                 observation,
                                 lli,
-                                signalStrength
+                                signalStrength,
                             )
                             observationRecord++
                         }
@@ -311,7 +320,7 @@ object RinexParser {
                     satelliteCount,
                     satellites,
                     receiverClockOffset,
-                    observations
+                    observations,
                 )
             }
 
@@ -320,5 +329,11 @@ object RinexParser {
     }
 }
 
+/**
+ * Checks if all the given classes are present in the list of [HeaderData].
+ *
+ * @param classes The classes to check for in the list.
+ * @return `true` if all the classes are found in the list, otherwise `false`.
+ */
 fun List<HeaderData>.containsEach(vararg classes: KClass<out HeaderData>): Boolean =
     classes.all { this.any { headerData -> it.isInstance(headerData) } }

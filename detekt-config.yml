@@ -752,3 +752,4 @@ style:
     active: true
     excludeImports:
       - 'java.util.*'
+      - 'org.wysko.autogeokt.rinex.RinexObservationData.Header.HeaderData.*'

@@ -1,6 +1,11 @@
 package org.wysko.autogeokt.rinex
 
+import org.wysko.autogeokt.geospatial.Cartesian3D
+import org.wysko.autogeokt.rinex.RinexObservationData.Header.HeaderData.ObservationInfo.ObservationType
 import kotlin.reflect.KClass
+
+private const val MIN_SIGNAL_STRENGTH = 1
+private const val MAX_SIGNAL_STRENGTH = 9
 
 /**
  * Corresponds to the "Observation Data File" type, as specified in the RINEX specification.
@@ -14,20 +19,20 @@ object RinexObservationData {
      * @property headerData The header data records.
      */
     data class Header(
-        val headerData: List<HeaderData>
+        val headerData: List<HeaderData>,
     ) {
 
         /**
          * Inline function that takes a KClass as input, checks if an instance of it
          * exists in the [headerData] list, and returns it.
          *
+         * @param T The type of the class to get.
          * @param klass The class to check for an instance of among the [headerData].
          * @return An instance of the passed class from [headerData], or null if no such instance exists.
          */
-        inline operator fun <reified T : HeaderData> get(klass: KClass<T>): T? {
-            val result = headerData.firstOrNull { klass.isInstance(it) }
-            return if (result is T?) result else null
-        }
+        @Suppress("DataClassContainsFunctions")
+        inline operator fun <reified T : HeaderData> get(klass: KClass<T>): T? =
+            headerData.firstOrNull { klass.isInstance(it) } as? T
 
         /**
          * A type of header data record.
@@ -132,7 +137,14 @@ object RinexObservationData {
                 val x: Double,
                 val y: Double,
                 val z: Double,
-            ) : HeaderData()
+            ) : HeaderData() {
+                /**
+                 * Converts the approximate position to a [Cartesian3D].
+                 *
+                 * @return The [Cartesian3D] representation of the approximate position.
+                 */
+                fun toCartesian3D(): Cartesian3D = Cartesian3D(x, y, z)
+            }
 
             /**
              * The height of the antenna's bottom surface above the marker, and any eccentricities east and north. All
@@ -167,8 +179,13 @@ object RinexObservationData {
                  * A wavelength factor for a GPS carrier frequency.
                  */
                 sealed class WavelengthFactor {
+                    /** Full cycle ambiguities. */
                     data object FullCycleAmbiguities : WavelengthFactor()
+
+                    /** Half cycle ambiguities. */
                     data object HalfCycleAmbiguities : WavelengthFactor()
+
+                    /** Single frequency instrument. */
                     data object SingleFrequencyInstrument : WavelengthFactor()
 
                     companion object {
@@ -196,7 +213,7 @@ object RinexObservationData {
              * @property types The observation types.
              */
             data class ObservationInfo(
-                val types: List<ObservationType>
+                val types: List<ObservationType>,
             ) : HeaderData() {
                 /**
                  * An observation type, like L1 or L2.
@@ -208,11 +225,12 @@ object RinexObservationData {
                     val observationCode: ObservationCode,
                     val frequencyCode: Int,
                 ) {
+                    @Suppress("MagicNumber")
                     private val validFrequencyCodes = listOf(1, 2, 5, 6, 7, 8)
 
                     init {
                         check(
-                            frequencyCode in validFrequencyCodes
+                            frequencyCode in validFrequencyCodes,
                         ) { "Frequency code $frequencyCode must be one of ${validFrequencyCodes.joinToString()}" }
                     }
 
@@ -226,7 +244,7 @@ object RinexObservationData {
                         /** Pseudorange: C/A, L2C for GPS; C/A for Glonass; All for Galileo. The units are meters. */
                         data object Pseudorange : ObservationCode("C")
 
-                        /** Pseduorange: P code for GPS and Glonass. The units are meters. */
+                        /** Pseudorange: P code for GPS and Glonass. The units are meters. */
                         data object PCode : ObservationCode("P")
 
                         /** Carrier phase. The units are full cycles. */
@@ -349,7 +367,8 @@ object RinexObservationData {
      * @property epochFlag The epoch flag.
      * @property satelliteCount The number of satellites in the current epoch.
      * @property prns The PRNs of the satellites in the current epoch.
-     * @property receiverClockOffset The receiver clock offset. This is optional; if it is not present, the value is `0.0`.
+     * @property receiverClockOffset The receiver clock offset. This is optional; if it is not present, the value is
+     * `0.0`.
      * @property observations The observations for the current epoch.
      */
     data class ObservationDataRecord(
@@ -366,33 +385,51 @@ object RinexObservationData {
          * @property satellite The satellite.
          * @property observationType The type of observation, e.g., L1 or L2.
          * @property observation The observation value.
-         * @property lli The loss of lock indication.
+         * @property lossOfLockIndication The loss of lock indication.
          * @property signalStrength The signal strength.
          */
         data class SatelliteObservation(
             val satellite: Satellite,
             val observationType: ObservationType,
             val observation: Double,
-            val lli: LossOfLockIndication,
+            val lossOfLockIndication: LossOfLockIndication,
             val signalStrength: SignalStrength,
         )
 
-        @Suppress("unused")
+        /**
+         * Represents different flags associated with an epoch.
+         *
+         * @property flag The integer value associated with the epoch flag.
+         */
+        @Suppress("unused", "MagicNumber")
         sealed class EpochFlag(val flag: Int) {
             /** The data object is OK. */
             data object OK : EpochFlag(0)
 
             /** There was a power failure between the previous and current epoch. */
             data object PowerFailure : EpochFlag(1)
+
+            /** The antenna is starting to move. */
             data object StartMovingAntenna : EpochFlag(2)
+
+            /** The receiver is starting to record new site occupation. */
             data object NewSiteOccupation : EpochFlag(3)
+
+            /** Header info. */
             data object HeaderInfo : EpochFlag(4)
+
+            /** External event. */
             data object ExternalEvent : EpochFlag(5)
 
             companion object {
-                fun fromInt(flag: Int): EpochFlag {
-                    return EpochFlag::class.sealedSubclasses.map { it.objectInstance!! }.first { it.flag == flag }
-                }
+                /**
+                 * Converts a RINEX epoch flag integer to an [EpochFlag].
+                 *
+                 * @param flag The RINEX epoch flag integer.
+                 * @return The corresponding [EpochFlag].
+                 */
+                fun fromInt(flag: Int): EpochFlag =
+                    EpochFlag::class.sealedSubclasses.map { it.objectInstance!! }.first { it.flag == flag }
             }
         }
 
@@ -400,11 +437,15 @@ object RinexObservationData {
          * Indicates any loss of lock during this observation.
          *
          * @property lossOfLock `true` if there was a loss of lock, `false` otherwise.
-         * @property oppositeWavelengthFactor `true` if the observation is under the opposite wavelength factor, `false` otherwise.
-         * @property observationUnderAntispoofing `true` if the observation is under anti-spoofing (may suffer from increased noise), `false` otherwise.
+         * @property oppositeWavelengthFactor `true` if the observation is under the opposite wavelength factor,
+         * `false` otherwise.
+         * @property observationUnderAntispoofing `true` if the observation is under anti-spoofing (may suffer from
+         * increased noise), `false` otherwise.
          */
         data class LossOfLockIndication(
-            val lossOfLock: Boolean, val oppositeWavelengthFactor: Boolean, val observationUnderAntispoofing: Boolean
+            val lossOfLock: Boolean,
+            val oppositeWavelengthFactor: Boolean,
+            val observationUnderAntispoofing: Boolean,
         ) {
 
             companion object {
@@ -415,14 +456,18 @@ object RinexObservationData {
                  * @return The corresponding [LossOfLockIndication].
                  */
                 fun fromString(value: String): LossOfLockIndication {
-                    if (value.isBlank()) return LossOfLockIndication(
-                        lossOfLock = false, oppositeWavelengthFactor = false, observationUnderAntispoofing = false
-                    )
+                    if (value.isBlank()) {
+                        return LossOfLockIndication(
+                            lossOfLock = false,
+                            oppositeWavelengthFactor = false,
+                            observationUnderAntispoofing = false,
+                        )
+                    }
                     val int = value.toInt()
                     return LossOfLockIndication(
                         lossOfLock = int and 0b1 == 0b1,
                         oppositeWavelengthFactor = int and 0b10 == 0b10,
-                        observationUnderAntispoofing = int and 0b100 == 0b100
+                        observationUnderAntispoofing = int and 0b100 == 0b100,
                     )
                 }
             }
@@ -439,7 +484,9 @@ object RinexObservationData {
              */
             data class IntervalProjection(val value: Int) : SignalStrength() {
                 init {
-                    check(value in 1..9) { "Signal strength $value must be between 1 and 9" }
+                    check(value in MIN_SIGNAL_STRENGTH..MAX_SIGNAL_STRENGTH) {
+                        "Signal strength $value must be between 1 and 9"
+                    }
                 }
             }
 

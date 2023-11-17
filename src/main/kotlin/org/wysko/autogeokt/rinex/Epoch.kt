@@ -23,7 +23,7 @@ data class Epoch(
     val hour: Int,
     val minute: Int,
     val second: Double,
-) {
+) : Comparable<Epoch> {
 
     /**
      * Converts the Moment into a LocalDateTime object.
@@ -32,6 +32,17 @@ data class Epoch(
      */
     fun toDateTime(): LocalDateTime =
         LocalDateTime.of(year, month, day, hour, minute, second.toInt(), (second % 1 * NANOSECONDS_IN_SECOND).toInt())
+
+    override fun compareTo(other: Epoch): Int {
+        val thisDateTime = this.toDateTime()
+        val otherDateTime = other.toDateTime()
+
+        return when {
+            thisDateTime.isBefore(otherDateTime) -> -1
+            thisDateTime.isAfter(otherDateTime) -> 1
+            else -> 0
+        }
+    }
 
     /**
      * Converts the epoch into a formatted string.

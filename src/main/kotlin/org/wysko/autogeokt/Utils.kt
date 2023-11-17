@@ -6,3 +6,10 @@ package org.wysko.autogeokt
  * @return A new string with each line trimmed.
  */
 fun String.trimLines() = lines().joinToString("\n") { it.trim() }
+
+/**
+ * Convenience operator function to return the [substring].
+ *
+ * @param range The substring range.
+ */
+operator fun String.get(range: IntRange) = substring(range)

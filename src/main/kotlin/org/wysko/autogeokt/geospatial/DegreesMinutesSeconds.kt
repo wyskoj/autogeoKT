@@ -2,6 +2,12 @@ package org.wysko.autogeokt.geospatial
 
 import kotlinx.serialization.Serializable
 
+typealias DMS = DegreesMinutesSeconds
+
+private const val MINUTES_IN_DEGREE = 60.0
+
+private const val SECONDS_IN_DEGREE = 3600.0
+
 /**
  * An angle represented in degrees, minutes, and seconds format.
  *
@@ -17,12 +23,24 @@ data class DegreesMinutesSeconds(
     val minutes: Int,
     val seconds: Double,
 ) {
+
+    constructor(radians: Double) : this(
+        degrees = Math.toDegrees(radians).toInt(),
+        minutes = (Math.toDegrees(radians) % 1 * 60).toInt(),
+        seconds = Math.toDegrees(radians) % 1 * 60 % 1 * 60,
+    )
+
     /**
      * Converts the angle to radians.
      *
      * @return The angle in radians.
      */
     fun toRadians(): Double = toRadians(degrees, minutes, seconds)
+
+    /**
+     * Converts the angle to decimal degrees.
+     */
+    fun toDegrees(): Double = degrees + minutes / MINUTES_IN_DEGREE + seconds / SECONDS_IN_DEGREE
 
     override fun toString(): String = "$degrees° $minutes' $seconds\""
 
@@ -37,6 +55,6 @@ data class DegreesMinutesSeconds(
          */
         @Suppress("MagicNumber")
         fun toRadians(degrees: Int, minutes: Int, seconds: Double): Double =
-            Math.toRadians(degrees + minutes / 60.0 + seconds / 3600.0)
+            Math.toRadians(degrees + minutes / MINUTES_IN_DEGREE + seconds / SECONDS_IN_DEGREE)
     }
 }

@@ -27,7 +27,7 @@ class Radii(
 
     override val result: RadiiResult by lazy {
         val radiusMeridian = radiusInMeridian()
-        val radiusPrimeVertical = radiusPrimeVertical()
+        val radiusPrimeVertical = radiusPrimeVertical(data.ellipsoid, data.latitude)
         val radiusAzimuth = radiusAzimuth(radiusMeridian, radiusPrimeVertical)
         RadiiResult(radiusPrimeVertical, radiusMeridian, radiusAzimuth)
     }
@@ -39,9 +39,6 @@ class Radii(
                 data.latitude.toRadians(),
             ).pow(2)
             ).pow(1.5)
-
-    private fun radiusPrimeVertical(): Double =
-        data.ellipsoid.a / sqrt(1 - data.ellipsoid.eccentricitySquared * sin(data.latitude.toRadians()).pow(2))
 
     private fun radiusAzimuth(radiusMeridian: Double, radiusPrimeVertical: Double): Optional<Double> =
         data.azimuth.map { azimuth ->
@@ -87,6 +84,15 @@ class Radii(
             canBeTemporary = true,
             operationDetails = OPERATION_DETAILS.getValue(Radii::class),
         )
+
+        /**
+         * Computes the radius in the prime vertical.
+         *
+         * @param ellipsoid The [Ellipsoid].
+         * @param latitude [DegreesMinutesSeconds] of the latitude
+         */
+        fun radiusPrimeVertical(ellipsoid: Ellipsoid, latitude: DegreesMinutesSeconds): Double =
+            ellipsoid.a / sqrt(1 - ellipsoid.eccentricitySquared * sin(latitude.toRadians()).pow(2))
     }
 }
 

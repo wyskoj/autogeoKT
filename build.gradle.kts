@@ -33,6 +33,14 @@ dependencies {
 
     // KotlinX Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+    // jMonkeyEngine
+    implementation("org.jmonkeyengine:jme3-core:3.5.2-stable")
+    implementation("org.jmonkeyengine:jme3-lwjgl3:3.5.2-stable")
+    implementation("org.jmonkeyengine:jme3-desktop:3.5.2-stable")
+    implementation("org.jmonkeyengine:jme3-plugins:3.5.2-stable")
+    implementation("org.jmonkeyengine:jme3-effects:3.5.2-stable")
+
 }
 
 tasks.test {
