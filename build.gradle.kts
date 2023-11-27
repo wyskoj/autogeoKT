@@ -1,7 +1,9 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.20"
     kotlin("plugin.serialization") version "1.9.0"
-    id("org.jetbrains.compose") version "1.5.3"
+    id("org.jetbrains.compose") version "1.5.10"
 }
 
 group = "org.wysko"
@@ -40,7 +42,6 @@ dependencies {
     implementation("org.jmonkeyengine:jme3-desktop:3.5.2-stable")
     implementation("org.jmonkeyengine:jme3-plugins:3.5.2-stable")
     implementation("org.jmonkeyengine:jme3-effects:3.5.2-stable")
-
 }
 
 tasks.test {
@@ -49,4 +50,10 @@ tasks.test {
 
 kotlin {
     jvmToolchain(17)
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+    }
 }

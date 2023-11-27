@@ -46,7 +46,7 @@ object RinexParser {
                     "RCV CLOCK OFFS APPL" -> parseReceiverClockOffset(line)
                     "LEAP SECONDS" -> parseLeapSeconds(line)
                     "# OF SATELLITES" -> parseNumberOfSatellites(line)
-                    "PRN / # OF OBS" -> parsePseduorandomObservationCount(line)
+                    "PRN / # OF OBS" -> parsePseudorandomObservationCount(line)
                     "END OF HEADER" -> null
                     else -> HeaderData.Unknown(line.substring(0..<60).trim(), headerLabel)
                 }
@@ -231,7 +231,7 @@ object RinexParser {
         private fun parseNumberOfSatellites(line: String): HeaderData.SatelliteCount =
             HeaderData.SatelliteCount(line.substring(0..<6).trim().toInt())
 
-        private fun parsePseduorandomObservationCount(line: String): HeaderData.SatelliteInformation {
+        private fun parsePseudorandomObservationCount(line: String): HeaderData.SatelliteInformation {
             val satelliteCode = line[3].toString()
             val satelliteNumber = line.substring(4..5)
             val values = line.substring(6..<60).chunked(6).map { it.trim().toInt() }
@@ -247,7 +247,9 @@ object RinexParser {
             while (true) {
                 var line = reader.readLine() ?: break
                 val epoch = Epoch(
-                    year = line.substring(1..2).trim().toInt(),
+                    year = line.substring(1..2).trim().toInt().let {
+                        2000 + it // RINEX stores it only as a two-digit number
+                    },
                     month = line.substring(4..5).trim().toInt(),
                     day = line.substring(7..8).trim().toInt(),
                     hour = line.substring(10..11).trim().toInt(),
@@ -274,8 +276,12 @@ object RinexParser {
                     }
                 }
 
-                val observationTypes =
-                    (header.headerData.first { it is HeaderData.ObservationInfo } as HeaderData.ObservationInfo).types.toList()
+                val observationInfo = header[HeaderData.ObservationInfo::class]
+                check(observationInfo != null) {
+                    "The RINEX header did not include any information about the types of observations. This is a" +
+                        " great time to panic!"
+                }
+                val observationTypes = observationInfo.types.toList()
                 val observationTypeCount = observationTypes.size
                 val observationContinuationLines = (observationTypeCount - 1) / 5
 
@@ -291,24 +297,26 @@ object RinexParser {
                             val observation = line.substring(offset * 16..<offset * 16 + 14).trim().run {
                                 if (isBlank()) 0.0 else toDouble()
                             }
-                            val lli =
-                                ObservationDataRecord.LossOfLockIndication.fromString(line[offset * 16 + 14].toString())
-                            val signalStrength = line[offset * 16 + 15].toString().run {
-                                if (isBlank()) {
-                                    ObservationDataRecord.SignalStrength.NotKnownDontCare
-                                } else {
-                                    ObservationDataRecord.SignalStrength.IntervalProjection(
-                                        toInt(),
-                                    )
+                            if (observation != 0.0) {
+                                val lli = ObservationDataRecord.LossOfLockIndication
+                                    .fromString(line[offset * 16 + 14].toString())
+                                val signalStrength = line[offset * 16 + 15].toString().run {
+                                    if (isBlank()) {
+                                        ObservationDataRecord.SignalStrength.NotKnownDontCare
+                                    } else {
+                                        ObservationDataRecord.SignalStrength.IntervalProjection(
+                                            toInt(),
+                                        )
+                                    }
                                 }
+                                observations += ObservationDataRecord.SatelliteObservation(
+                                    satellites[satelliteIndex],
+                                    observationTypes[observationRecord],
+                                    observation,
+                                    lli,
+                                    signalStrength,
+                                )
                             }
-                            observations += ObservationDataRecord.SatelliteObservation(
-                                satellites[satelliteIndex],
-                                observationTypes[observationRecord],
-                                observation,
-                                lli,
-                                signalStrength,
-                            )
                             observationRecord++
                         }
                     }
